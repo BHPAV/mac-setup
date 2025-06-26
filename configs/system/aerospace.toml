@@ -1,0 +1,182 @@
+# AeroSpace Configuration
+# i3-like tiling window manager for macOS
+
+# Start AeroSpace at login
+start-at-login = true
+
+# Normalizations
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+# Layouts
+accordion-padding = 30
+
+# Gaps
+gaps.inner.horizontal = 10
+gaps.inner.vertical = 10
+gaps.outer.left = 10
+gaps.outer.bottom = 10
+gaps.outer.top = 10
+gaps.outer.right = 10
+
+# Visual settings
+focused-border.enabled = true
+focused-border.color = '#7aa2f7'
+focused-border.width = 2
+
+# Mouse follows focus
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+on-focus-changed = ['move-mouse window-lazy-center']
+
+# Default root container layout
+default-root-container-layout = 'tiles'
+
+# Default root container orientation
+default-root-container-orientation = 'auto'
+
+# Key mapping - using alt as the main modifier
+# alt is mapped to option key on macOS
+key-mapping.preset = 'qwerty'
+
+# Mode configuration
+[mode.main.binding]
+# Focus windows
+alt-h = 'focus left'
+alt-j = 'focus down'
+alt-k = 'focus up'
+alt-l = 'focus right'
+
+# Move windows
+alt-shift-h = 'move left'
+alt-shift-j = 'move down'
+alt-shift-k = 'move up'
+alt-shift-l = 'move right'
+
+# Split windows
+alt-b = 'split horizontal'
+alt-v = 'split vertical'
+
+# Layout commands
+alt-f = 'fullscreen'
+alt-s = 'layout v_accordion'             # "stacking" via vertical accordion
+alt-w = 'layout h_accordion'             # "tabbed" via horizontal accordion  
+alt-e = 'layout tiles horizontal vertical'  # Toggle split
+alt-shift-space = 'layout floating tiling'  # Toggle floating
+
+# Flatten container  
+alt-shift-f = 'flatten-workspace-tree'
+
+# Resize mode
+alt-r = 'mode resize'
+
+# Balance windows
+alt-shift-b = 'balance-sizes'
+
+# Float window
+alt-shift-f = 'layout floating'
+
+# Close window
+alt-shift-q = 'close'
+
+# Reload config
+alt-shift-c = 'reload-config'
+
+# Workspace navigation
+alt-1 = 'workspace 1'
+alt-2 = 'workspace 2'
+alt-3 = 'workspace 3'
+alt-4 = 'workspace 4'
+alt-5 = 'workspace 5'
+alt-6 = 'workspace 6'
+alt-7 = 'workspace 7'
+alt-8 = 'workspace 8'
+alt-9 = 'workspace 9'
+alt-0 = 'workspace 10'
+
+# Move focused window to workspace
+alt-shift-1 = 'move-node-to-workspace 1'
+alt-shift-2 = 'move-node-to-workspace 2'
+alt-shift-3 = 'move-node-to-workspace 3'
+alt-shift-4 = 'move-node-to-workspace 4'
+alt-shift-5 = 'move-node-to-workspace 5'
+alt-shift-6 = 'move-node-to-workspace 6'
+alt-shift-7 = 'move-node-to-workspace 7'
+alt-shift-8 = 'move-node-to-workspace 8'
+alt-shift-9 = 'move-node-to-workspace 9'
+alt-shift-0 = 'move-node-to-workspace 10'
+
+# Move between monitors
+alt-shift-comma = 'move-node-to-monitor prev'
+alt-shift-period = 'move-node-to-monitor next'
+
+# Move workspace to monitor
+alt-shift-m = 'move-workspace-to-monitor next'
+
+# Workspace back and forth
+alt-tab = 'workspace-back-and-forth'
+
+# Application shortcuts (using cmd)
+cmd-enter = 'exec-and-forget open -n -a "Alacritty"'
+cmd-shift-enter = 'exec-and-forget open -n -a "WezTerm"'
+
+# Resize mode bindings
+[mode.resize.binding]
+h = 'resize smart -50'
+j = 'resize smart +50'
+k = 'resize smart -50'
+l = 'resize smart +50'
+shift-h = 'resize smart -100'
+shift-j = 'resize smart +100'
+shift-k = 'resize smart -100'
+shift-l = 'resize smart +100'
+enter = 'mode main'
+esc = 'mode main'
+
+# Workspace-specific layouts
+[[on-window-detected]]
+if.app-id = 'com.apple.mail'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'com.tinyspeck.slackmacgap'
+run = 'move-node-to-workspace 4'
+
+[[on-window-detected]]
+if.app-id = 'com.spotify.client'
+run = 'move-node-to-workspace 10'
+
+# Window rules for specific applications
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.systempreferences'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.ActivityMonitor'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.1password.1password'
+run = 'layout floating'
+
+# Workspace names (optional)
+[workspace-to-monitor-force-assignment]
+1 = 'main'         # Primary monitor
+2 = 'main'
+3 = 'main'
+4 = 'secondary'    # External monitor
+5 = 'secondary'
+6 = 'secondary'
+
+# Callbacks
+after-login-command = []
+after-startup-command = []
+
+# Exec on workspace change
+exec-on-workspace-change = [
+  '/bin/bash', '-c',
+  'sketchybar --trigger aerospace_workspace_change AEROSPACE_FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+]

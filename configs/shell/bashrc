@@ -1,0 +1,309 @@
+#!/usr/bin/env bash
+# Bash Configuration File
+# ~/.bashrc
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# Shell Options
+# -------------
+
+# Append to history file, don't overwrite
+shopt -s histappend
+
+# Check window size after each command
+shopt -s checkwinsize
+
+# Extended pattern matching
+shopt -s extglob
+
+# Case-insensitive globbing
+shopt -s nocaseglob
+
+# Autocorrect typos in path names
+shopt -s cdspell
+
+# Enable recursive globbing with **
+shopt -s globstar 2> /dev/null
+
+# History Configuration
+# --------------------
+
+# History file size
+HISTSIZE=10000
+HISTFILESIZE=20000
+
+# Ignore duplicate commands and commands starting with space
+HISTCONTROL=ignoreboth
+
+# History timestamp format
+HISTTIMEFORMAT="%F %T "
+
+# Commands to ignore in history
+HISTIGNORE="ls:ll:la:cd:cd -:pwd:exit:date:* --help"
+
+# Prompt Configuration
+# -------------------
+
+# Color definitions
+RED='\[\033[0;31m\]'
+GREEN='\[\033[0;32m\]'
+YELLOW='\[\033[0;33m\]'
+BLUE='\[\033[0;34m\]'
+PURPLE='\[\033[0;35m\]'
+CYAN='\[\033[0;36m\]'
+WHITE='\[\033[0;37m\]'
+RESET='\[\033[0m\]'
+
+# Git branch in prompt
+git_branch() {
+    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
+# Set prompt
+PS1="${GREEN}\u${RESET}@${CYAN}\h${RESET}:${BLUE}\w${YELLOW}\$(git_branch)${RESET}\$ "
+
+# Enable color support
+# -------------------
+
+# Enable colors for ls, grep, etc.
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
+
+# Colored GCC warnings and errors
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# Aliases
+# -------
+
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ~='cd ~'
+alias -- -='cd -'
+
+# List directory contents
+alias ls='ls --color=auto'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias lt='ls -ltr'
+alias lh='ls -lh'
+alias ld='ls -ld */'
+
+# File operations
+alias cp='cp -iv'
+alias mv='mv -iv'
+alias rm='rm -iv'
+alias mkdir='mkdir -pv'
+
+# Grep with color
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# System info
+alias df='df -h'
+alias du='du -h'
+alias free='free -h'
+alias top='htop'
+
+# Git aliases
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gco='git checkout'
+alias gb='git branch'
+alias gl='git log --oneline --graph --decorate'
+alias gp='git push'
+alias gpl='git pull'
+alias gd='git diff'
+alias gdc='git diff --cached'
+
+# Docker aliases
+alias d='docker'
+alias dc='docker-compose'
+alias dps='docker ps'
+alias dpsa='docker ps -a'
+alias dimg='docker images'
+alias dexec='docker exec -it'
+
+# Python aliases
+alias py='python3'
+alias pip='pip3'
+alias venv='python3 -m venv'
+alias activate='source venv/bin/activate'
+
+# Misc aliases
+alias h='history'
+alias j='jobs -l'
+alias which='type -all'
+alias path='echo -e ${PATH//:/\\n}'
+alias now='date +"%T"'
+alias nowdate='date +"%Y-%m-%d"'
+alias vi='vim'
+alias edit='${EDITOR}'
+alias ports='netstat -tulanp'
+
+# Safety aliases
+alias chown='chown --preserve-root'
+alias chmod='chmod --preserve-root'
+alias chgrp='chgrp --preserve-root'
+
+# Functions
+# ---------
+
+# Create directory and cd into it
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# Extract archives
+extract() {
+    if [ -f "$1" ] ; then
+        case $1 in
+            *.tar.bz2)   tar xjf "$1"   ;;
+            *.tar.gz)    tar xzf "$1"   ;;
+            *.bz2)       bunzip2 "$1"   ;;
+            *.rar)       unrar x "$1"   ;;
+            *.gz)        gunzip "$1"    ;;
+            *.tar)       tar xf "$1"    ;;
+            *.tbz2)      tar xjf "$1"   ;;
+            *.tgz)       tar xzf "$1"   ;;
+            *.zip)       unzip "$1"     ;;
+            *.Z)         uncompress "$1";;
+            *.7z)        7z x "$1"      ;;
+            *)           echo "'$1' cannot be extracted" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# Find file by name
+ff() {
+    find . -type f -iname "*$1*"
+}
+
+# Find directory by name
+fd() {
+    find . -type d -iname "*$1*"
+}
+
+# Show PATH entries on separate lines
+path() {
+    echo "$PATH" | tr ':' '\n'
+}
+
+# Quick backup
+backup() {
+    cp "$1"{,.bak-$(date +%Y%m%d-%H%M%S)}
+}
+
+# Calculator
+calc() {
+    echo "$*" | bc -l
+}
+
+# Weather
+weather() {
+    curl -s "wttr.in/${1:-$(curl -s ipinfo.io/city)}" | head -7
+}
+
+# Environment Variables
+# --------------------
+
+# Default editor
+export EDITOR='vim'
+export VISUAL='vim'
+
+# Language
+export LANG='en_US.UTF-8'
+export LC_ALL='en_US.UTF-8'
+
+# Less configuration
+export LESS='-R -F -X -i -P ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]'
+export LESSCHARSET='utf-8'
+
+# Man pages in color
+export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
+export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
+export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
+export LESS_TERMCAP_so=$'\E[01;44;33m' # begin reverse video
+export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
+export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
+export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+
+# Homebrew (macOS)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Apple Silicon
+    if [[ -f "/opt/homebrew/bin/brew" ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+    # Intel
+    if [[ -f "/usr/local/bin/brew" ]]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+fi
+
+# PATH additions
+# --------------
+
+# Local bin directories
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
+
+# Programming languages
+export PATH="$HOME/.cargo/bin:$PATH"           # Rust
+export PATH="$HOME/.poetry/bin:$PATH"          # Poetry
+export PATH="$HOME/.pyenv/bin:$PATH"           # Pyenv
+export PATH="$HOME/.rbenv/bin:$PATH"           # Rbenv
+export PATH="$HOME/.nvm/versions/node/*/bin:$PATH"  # Node
+
+# Completion
+# ----------
+
+# Enable bash completion
+if ! shopt -oq posix; then
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    elif [ -f /opt/homebrew/etc/profile.d/bash_completion.sh ]; then
+        . /opt/homebrew/etc/profile.d/bash_completion.sh
+    fi
+fi
+
+# Git completion
+if [ -f ~/.git-completion.bash ]; then
+    . ~/.git-completion.bash
+fi
+
+# SSH agent
+# ---------
+
+# Start SSH agent if not running
+if [ -z "$SSH_AUTH_SOCK" ] ; then
+    eval "$(ssh-agent -s)" > /dev/null
+fi
+
+# Load local bashrc if exists
+# ---------------------------
+
+if [ -f ~/.bashrc.local ]; then
+    . ~/.bashrc.local
+fi
+
+# Welcome message
+# ---------------
+
+echo "Welcome to $(hostname), $(whoami)!"
+echo "Today is $(date '+%A, %B %d, %Y')"
+echo ""

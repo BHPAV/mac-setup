@@ -1,0 +1,40 @@
+# SSH Configuration File
+
+# Global settings
+Host *
+    # Use SSH key agent
+    AddKeysToAgent yes
+    UseKeychain yes
+    # Keep connections alive
+    ServerAliveInterval 60
+    ServerAliveCountMax 30
+    # Reuse connections
+    ControlMaster auto
+    ControlPath ~/.ssh/sockets/%r@%h-%p
+    ControlPersist 600
+    # Security
+    PasswordAuthentication no
+    ChallengeResponseAuthentication no
+    HashKnownHosts yes
+    # Compression
+    Compression yes
+
+# GitHub
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+
+# GitLab
+Host gitlab.com
+    HostName gitlab.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+
+# Example server config
+# Host myserver
+#     HostName 192.168.1.100
+#     User myusername
+#     Port 22
+#     IdentityFile ~/.ssh/myserver_key
+#     ForwardAgent yes

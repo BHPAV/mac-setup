@@ -1,0 +1,143 @@
+# AWS CLI Configuration
+# ~/.aws/config
+
+[default]
+region = us-east-1
+output = json
+cli_timestamp_format = iso8601
+cli_follow_urlparam = true
+cli_history = enabled
+max_attempts = 3
+retry_mode = adaptive
+
+# Enable auto-prompt for v2
+cli_auto_prompt = on-partial
+
+# S3 configuration
+s3 =
+    max_concurrent_requests = 20
+    max_queue_size = 10000
+    multipart_threshold = 64MB
+    multipart_chunksize = 16MB
+    max_bandwidth = 100MB/s
+    use_accelerate_endpoint = false
+    addressing_style = auto
+
+# EC2 configuration
+ec2 =
+    vpn_ecmp_support = enable
+
+[profile personal]
+region = us-west-2
+output = table
+source_profile = default
+
+[profile work]
+region = us-east-1
+output = json
+role_arn = arn:aws:iam::123456789012:role/WorkRole
+source_profile = default
+role_session_name = work-session
+duration_seconds = 3600
+
+[profile staging]
+region = eu-west-1
+output = json
+role_arn = arn:aws:iam::123456789012:role/StagingRole
+source_profile = default
+role_session_name = staging-session
+mfa_serial = arn:aws:iam::123456789012:mfa/username
+
+[profile production]
+region = us-east-1
+output = json
+role_arn = arn:aws:iam::123456789012:role/ProductionRole
+source_profile = default
+role_session_name = production-session
+mfa_serial = arn:aws:iam::123456789012:mfa/username
+duration_seconds = 3600
+
+# SSO Configuration
+[profile sso-dev]
+sso_start_url = https://my-org.awsapps.com/start
+sso_region = us-east-1
+sso_account_id = 123456789012
+sso_role_name = DeveloperAccess
+region = us-east-1
+output = json
+
+[profile sso-prod]
+sso_start_url = https://my-org.awsapps.com/start
+sso_region = us-east-1
+sso_account_id = 987654321098
+sso_role_name = ReadOnlyAccess
+region = us-east-1
+output = json
+
+# Services configuration
+[services]
+# Local endpoint URL for testing
+local-dynamodb =
+    endpoint_url = http://localhost:8000
+
+local-s3 =
+    endpoint_url = http://localhost:9000
+
+# Plugin configuration
+[plugins]
+endpoint = awscli_plugin_endpoint
+
+# Credential process example
+[profile credential-process]
+credential_process = /opt/homebrew/bin/aws-vault exec work --json
+
+# ECS configuration
+[profile ecs]
+ecs =
+    cluster = my-cluster
+    service = my-service
+    task_definition = my-task:latest
+
+# CloudFormation parameters
+[profile cloudformation]
+parameter_overrides =
+    Environment=development
+    InstanceType=t3.micro
+    
+# Additional settings for specific services
+[profile data-science]
+region = us-west-2
+output = json
+# SageMaker specific settings
+sagemaker =
+    execution_role = arn:aws:iam::123456789012:role/SageMakerRole
+
+# Aliases (requires aws-cli-aliases plugin)
+[toplevel]
+
+whoami = sts get-caller-identity
+
+list-instances = ec2 describe-instances \
+    --query 'Reservations[*].Instances[*].{ID:InstanceId,Type:InstanceType,State:State.Name,Name:Tags[?Key==`Name`]|[0].Value}' \
+    --output table
+
+list-buckets = s3api list-buckets \
+    --query 'Buckets[*].[Name,CreationDate]' \
+    --output table
+
+get-secret = secretsmanager get-secret-value \
+    --secret-id
+
+list-functions = lambda list-functions \
+    --query 'Functions[*].[FunctionName,Runtime,LastModified]' \
+    --output table
+
+running-instances = ec2 describe-instances \
+    --filters Name=instance-state-name,Values=running \
+    --query 'Reservations[*].Instances[*].{ID:InstanceId,Type:InstanceType,Name:Tags[?Key==`Name`]|[0].Value,AZ:Placement.AvailabilityZone,PublicIP:PublicIpAddress,PrivateIP:PrivateIpAddress}' \
+    --output table
+
+ecr-login = ecr get-login-password \
+    --region $AWS_REGION | docker login \
+    --username AWS \
+    --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com

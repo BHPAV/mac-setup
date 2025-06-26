@@ -1,0 +1,259 @@
+# Git Configuration
+# Location: ~/.gitconfig
+
+[user]
+    name = Your Name
+    email = your.email@example.com
+    signingkey = YOUR_GPG_KEY_ID
+
+[core]
+    editor = nvim
+    whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+    excludesfile = ~/.gitignore_global
+    pager = delta  # Enhanced diff viewer (install with: brew install git-delta)
+    autocrlf = input
+    ignorecase = false
+
+[init]
+    defaultBranch = main
+
+[commit]
+    gpgsign = true
+    template = ~/.gitmessage
+
+[pull]
+    rebase = false
+    ff = only
+
+[push]
+    default = current
+    autoSetupRemote = true
+    followTags = true
+
+[fetch]
+    prune = true
+    prunetags = true
+
+[merge]
+    tool = vimdiff
+    conflictstyle = diff3
+
+[diff]
+    tool = vimdiff
+    colorMoved = default
+    algorithm = histogram
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    features = decorations
+    line-numbers = true
+    side-by-side = true
+    navigate = true
+    syntax-theme = Dracula
+
+[delta "decorations"]
+    commit-decoration-style = bold yellow box ul
+    file-style = bold yellow ul
+    file-decoration-style = none
+    hunk-header-decoration-style = cyan box ul
+
+[color]
+    ui = true
+    diff = auto
+    status = auto
+    branch = auto
+    interactive = auto
+
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+    whitespace = red reverse
+
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = cyan
+
+# Aliases - Organized by category
+[alias]
+    # Basic shortcuts
+    s = status -sb
+    st = status
+    ci = commit
+    cm = commit -m
+    cma = commit -am
+    ca = commit --amend
+    can = commit --amend --no-edit
+    co = checkout
+    br = branch
+    df = diff
+    dfc = diff --cached
+    dfs = diff --staged
+    
+    # Adding and staging
+    a = add
+    aa = add -A
+    ap = add -p  # Interactive staging
+    ai = add -i  # Interactive mode
+    
+    # Branch management
+    branches = branch -a
+    remotes = remote -v
+    tags = tag -l
+    brd = branch -d
+    brD = branch -D
+    brm = branch -m  # Rename branch
+    
+    # Checkout shortcuts
+    cb = checkout -b
+    master = checkout master
+    main = checkout main
+    develop = checkout develop
+    last = checkout -  # Previous branch
+    
+    # Remote operations
+    ps = push
+    psf = push --force-with-lease
+    psu = push -u origin HEAD
+    pl = pull
+    plr = pull --rebase
+    f = fetch
+    fa = fetch --all
+    
+    # Logging - Pretty formats
+    l = log --oneline --graph --decorate
+    lg = log --graph --pretty=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
+    ll = log --pretty=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --numstat
+    ld = log --pretty=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ad)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --date=short
+    lf = log --pretty=fuller
+    hist = log --pretty=format:'%h %ad | %s%d [%an]' --graph --date=short
+    
+    # Search history
+    find = log --pretty=\"format:%Cgreen%H %Cblue%s\" --grep
+    who = log --pretty=\"format:%an %ae\" | sort | uniq -c | sort -nr
+    
+    # Working with commits
+    undo = reset --soft HEAD^
+    unstage = reset HEAD --
+    discard = checkout --
+    uncommit = reset --soft HEAD~1
+    recommit = commit -c ORIG_HEAD
+    
+    # Stash operations
+    ss = stash save
+    sl = stash list
+    sa = stash apply
+    sp = stash pop
+    sd = stash drop
+    
+    # Show information
+    show-files = show --pretty="" --name-only
+    show-last = show HEAD
+    contributors = shortlog --summary --numbered
+    
+    # Working with remotes
+    up = !git pull --rebase --prune $@ && git submodule update --init --recursive
+    save = !git add -A && git commit -m 'SAVEPOINT'
+    wip = commit -am "WIP"
+    undo-commit = reset HEAD~1 --mixed
+    
+    # Cleanup
+    cleanup = !git branch --merged | grep -v '\\*\\|master\\|main\\|develop' | xargs -n 1 git branch -d
+    prune-branches = !git remote prune origin && git branch -vv | grep ': gone]' | awk '{print $1}' | xargs -r git branch -d
+    
+    # Advanced workflows
+    # Show branches sorted by last modified
+    recent = for-each-ref --sort='-authordate' --format='%(authordate:short)%09%(objectname:short)%09%(refname)' refs/heads | sed -e 's-refs/heads/--'
+    
+    # List aliases
+    aliases = config --get-regexp alias
+    
+    # Assume unchanged (useful for config files)
+    assume = update-index --assume-unchanged
+    unassume = update-index --no-assume-unchanged
+    assumed = !git ls-files -v | grep ^h | cut -c 3-
+    
+    # Submodules
+    subup = submodule update --init --recursive
+    subst = submodule status
+    
+    # GitHub integration (requires hub or gh cli)
+    pr = !gh pr create
+    prs = !gh pr list
+    issue = !gh issue create
+    issues = !gh issue list
+    
+    # Utilities
+    root = rev-parse --show-toplevel
+    exec = "!exec "
+    
+    # Diff tools
+    dt = difftool
+    mt = mergetool
+    
+    # Quick stats
+    stats = shortlog -sn
+    today = log --since=midnight --author=\"$(git config user.name)\" --oneline
+    week = log --since=1.week --author=\"$(git config user.name)\" --oneline
+    
+    # File history
+    filelog = log -u
+    file-history = log --follow -p --
+    
+    # Grep through history
+    grep-history = "!f() { git rev-list --all | xargs git grep \"$@\"; }; f"
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
+[credential]
+    helper = osxkeychain
+
+[rerere]
+    enabled = true
+    autoupdate = true
+
+[help]
+    autocorrect = 1
+
+[branch]
+    autosetuprebase = always
+
+[rebase]
+    autoStash = true
+    autoSquash = true
+
+[advice]
+    statusHints = false
+    commitBeforeMerge = false
+    resolveConflict = false
+    detachedHead = false
+
+# URL shortcuts
+[url "git@github.com:"]
+    insteadOf = gh:
+    pushInsteadOf = github:
+    pushInsteadOf = git://github.com/
+
+[url "git://github.com/"]
+    insteadOf = github:
+
+[url "git@gitlab.com:"]
+    insteadOf = gl:
+    pushInsteadOf = gitlab:
+
+[url "git@bitbucket.org:"]
+    insteadOf = bb:
+    pushInsteadOf = bitbucket:

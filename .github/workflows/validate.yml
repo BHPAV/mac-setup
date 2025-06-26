@@ -1,0 +1,106 @@
+name: Validate Setup Scripts
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          directory: scripts
+          severity: warning
+          
+  validate-configs:
+    name: Validate Configuration Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Validate JSON files
+        run: |
+          for file in $(find configs -name "*.json"); do
+            echo "Validating $file"
+            python -m json.tool "$file" > /dev/null || exit 1
+          done
+          
+      - name: Validate YAML files
+        run: |
+          pip install pyyaml
+          for file in $(find configs -name "*.yaml" -o -name "*.yml"); do
+            echo "Validating $file"
+            python -c "import yaml; yaml.safe_load(open('$file'))" || exit 1
+          done
+          
+  test-scripts:
+    name: Test Scripts Syntax
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check bash syntax
+        run: |
+          for script in scripts/*.sh; do
+            echo "Checking syntax: $script"
+            bash -n "$script" || exit 1
+          done
+          
+      - name: Check script permissions
+        run: |
+          for script in scripts/*.sh; do
+            if [[ ! -x "$script" ]]; then
+              echo "Script is not executable: $script"
+              exit 1
+            fi
+          done
+          
+  documentation:
+    name: Check Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check for broken links in Markdown
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          folder-path: 'docs'
+          
+      - name: Spell check
+        uses: streetsidesoftware/cspell-action@v2
+        with:
+          files: |
+            **/*.md
+            
+  security:
+    name: Security Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          
+      - name: Check for sensitive files
+        run: |
+          # Check that no .env files are committed
+          if find . -name ".env" -not -path "./.git/*" | grep -q .; then
+            echo "Error: .env files found in repository!"
+            find . -name ".env" -not -path "./.git/*"
+            exit 1
+          fi
+          
+          # Check for private keys
+          if find . -name "*.pem" -o -name "*.key" -o -name "id_rsa*" -o -name "id_ed25519*" | grep -q .; then
+            echo "Error: Private key files found in repository!"
+            exit 1
+          fi

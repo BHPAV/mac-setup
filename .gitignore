@@ -1,0 +1,108 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.cache
+*~
+*.swp
+*.swo
+
+# Environment files (NEVER commit these!)
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+
+# Private keys and certificates
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# Backup files
+*.backup
+*.bak
+*.old
+*.orig
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Build outputs
+build/
+dist/
+out/
+target/
+
+# Dependency directories
+node_modules/
+vendor/
+venv/
+.venv/
+
+# Local configuration overrides
+*.local
+local/
+
+# Personal notes
+notes.md
+TODO.md
+NOTES.txt
+personal/
+
+# Sensitive data
+secrets/
+credentials/
+passwords.txt
+
+# Test outputs
+coverage/
+.coverage
+*.cover
+.pytest_cache/
+
+# Homebrew
+Brewfile.lock.json
+
+# Custom scripts that shouldn't be shared
+scripts/personal/
+scripts/work/
+
+# Archives
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# macOS Installer packages
+*.pkg
+*.dmg
+
+# Ignore actual configuration files (use templates instead)
+configs/personal/

@@ -1,0 +1,153 @@
+# Cargo Configuration
+# Rust package manager settings
+
+[build]
+# Number of parallel jobs, defaults to # of CPUs
+jobs = 8
+
+# Target directory for all builds
+# target-dir = "/path/to/target"
+
+# Use incremental compilation
+incremental = true
+
+[cargo-new]
+# Default version control system for new projects
+vcs = "git"
+
+# Default name for new projects
+name = "Your Name"
+email = "your.email@example.com"
+
+[net]
+# Number of times to retry network requests
+retry = 3
+
+# Use git CLI instead of built-in git support
+git-fetch-with-cli = true
+
+# Timeout for network requests (in seconds)
+timeout = 30
+
+[http]
+# HTTP proxy
+# proxy = "http://proxy.example.com:8080"
+
+# Number of parallel HTTP requests
+multiplexing = true
+
+# User agent
+user-agent = "cargo"
+
+[install]
+# Default installation root
+# root = "/path/to/install/root"
+
+[profile.dev]
+# Development profile settings
+opt-level = 0
+debug = true
+debug-assertions = true
+overflow-checks = true
+lto = false
+panic = 'unwind'
+incremental = true
+codegen-units = 256
+rpath = false
+
+[profile.release]
+# Release profile settings
+opt-level = 3
+debug = false
+debug-assertions = false
+overflow-checks = false
+lto = "thin"
+panic = 'unwind'
+incremental = false
+codegen-units = 16
+rpath = false
+strip = true
+
+[profile.release-with-debug]
+# Custom profile for release builds with debug info
+inherits = "release"
+debug = true
+
+[profile.bench]
+# Benchmark profile settings
+opt-level = 3
+debug = false
+debug-assertions = false
+overflow-checks = false
+lto = false
+panic = 'unwind'
+incremental = false
+codegen-units = 16
+rpath = false
+
+[target.aarch64-apple-darwin]
+# macOS ARM64 specific settings
+linker = "clang"
+rustflags = [
+    "-C", "link-arg=-undefined",
+    "-C", "link-arg=dynamic_lookup",
+]
+
+[target.x86_64-apple-darwin]
+# macOS x86_64 specific settings
+linker = "clang"
+rustflags = [
+    "-C", "link-arg=-undefined",
+    "-C", "link-arg=dynamic_lookup",
+]
+
+[registries.crates-io]
+# Official crates.io registry
+index = "https://github.com/rust-lang/crates.io-index"
+
+# Alternative registries can be added here
+# [registries.my-registry]
+# index = "https://my-intranet:8080/git/index"
+
+[source.crates-io]
+# crates.io source configuration
+registry = "https://github.com/rust-lang/crates.io-index"
+replace-with = "crates-io"
+
+# Mirror configuration (if using a mirror)
+# [source.mirror]
+# registry = "https://mirrors.example.com/crates.io-index"
+
+[alias]
+# Cargo aliases for common commands
+b = "build"
+br = "build --release"
+c = "check"
+ca = "check --all-features"
+cl = "clippy"
+cla = "clippy --all-features"
+d = "doc"
+do = "doc --open"
+f = "fmt"
+fc = "fmt --check"
+r = "run"
+rr = "run --release"
+t = "test"
+ta = "test --all-features"
+tr = "test --release"
+u = "update"
+
+# Custom aliases
+lint = "clippy -- -D warnings"
+audit = "audit --deny warnings"
+outdated = "outdated -R"
+bloat = "bloat --release"
+expand = "expand"
+
+[env]
+# Environment variables to set for all cargo invocations
+# RUST_BACKTRACE = "1"
+# RUST_LOG = "debug"
+
+# macOS specific environment
+MACOSX_DEPLOYMENT_TARGET = "11.0"

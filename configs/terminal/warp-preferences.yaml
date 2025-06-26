@@ -1,0 +1,139 @@
+# Warp Terminal Configuration
+# Location: ~/Library/Application Support/dev.warp.Warp-Stable/preferences.yaml
+
+# Theme Configuration
+theme:
+  name: "Dracula"  # Other options: "Nord", "Solarized Dark", "Gruvbox Dark"
+  
+# Font Settings
+font:
+  family: "JetBrains Mono"  # Recommended for Powerlevel10k icons
+  size: 14
+  ligatures: true  # Enable programming ligatures (=> != >= etc.)
+  
+# Window Settings
+window:
+  opacity: 0.95  # Slight transparency
+  blur_radius: 20
+  padding:
+    top: 10
+    bottom: 10
+    left: 10
+    right: 10
+
+# Behavior
+behavior:
+  # Enable Warp's AI features
+  ai_enabled: true
+  ai_model: "gpt-4"
+  
+  # Block settings (Warp's unique feature)
+  blocks:
+    compact_mode: false
+    show_timestamps: true
+    copy_on_select: true
+    
+  # Command Entry
+  command_entry:
+    position: "bottom"  # or "top"
+    multiline_paste_warning: true
+    
+  # Completions
+  completions:
+    enabled: true
+    show_descriptions: true
+    accept_on_tab: true
+    
+  # History
+  history:
+    save_history: true
+    history_limit: 10000
+    share_history_between_sessions: true
+    
+# Keyboard Shortcuts
+keybindings:
+  # Navigation
+  "cmd+t": "new_tab"
+  "cmd+d": "split_pane_vertical"
+  "cmd+shift+d": "split_pane_horizontal"
+  "cmd+w": "close_pane"
+  "cmd+[": "previous_tab"
+  "cmd+]": "next_tab"
+  
+  # Blocks
+  "cmd+up": "previous_block"
+  "cmd+down": "next_block"
+  "cmd+shift+c": "copy_block"
+  "cmd+shift+x": "copy_command"
+  "cmd+shift+o": "copy_output"
+  
+  # AI
+  "cmd+g": "ai_command_search"
+  "cmd+shift+g": "ai_explain_error"
+  
+  # Editor
+  "ctrl+a": "move_to_line_start"
+  "ctrl+e": "move_to_line_end"
+  "ctrl+k": "delete_to_line_end"
+  "alt+left": "move_word_left"
+  "alt+right": "move_word_right"
+
+# Workflows (Warp's saved commands)
+workflows:
+  - name: "Git Status Check"
+    command: "git status && git log --oneline -10"
+    description: "Show git status and recent commits"
+    
+  - name: "Docker Cleanup"
+    command: "docker system prune -af && docker volume prune -f"
+    description: "Clean up Docker system"
+    
+  - name: "Update All Homebrew"
+    command: "brew update && brew upgrade && brew cleanup"
+    description: "Update all Homebrew packages"
+    
+  - name: "Node Project Setup"
+    command: "npm init -y && npm install --save-dev typescript @types/node eslint prettier"
+    description: "Initialize new Node.js TypeScript project"
+    
+  - name: "Python Virtual Environment"
+    command: "python3 -m venv venv && source venv/bin/activate && pip install --upgrade pip"
+    description: "Create and activate Python virtual environment"
+
+# Launch Configurations
+launch_configs:
+  - name: "Frontend Dev"
+    commands:
+      - "cd ~/Projects/frontend"
+      - "npm run dev"
+    env:
+      NODE_ENV: "development"
+      
+  - name: "Backend API"
+    commands:
+      - "cd ~/Projects/api"
+      - "source venv/bin/activate"
+      - "python manage.py runserver"
+    env:
+      DJANGO_SETTINGS_MODULE: "config.settings.local"
+      
+  - name: "Docker Services"
+    commands:
+      - "cd ~/Projects/infrastructure"
+      - "docker-compose up -d postgres redis"
+      
+# Global Hotkey (Quake mode)
+global_hotkey:
+  enabled: true
+  shortcut: "cmd+`"
+  animation: "slide"
+  position: "top"
+  height: 60  # percentage of screen
+
+# Integration with shell
+shell:
+  program: "/bin/zsh"
+  args: ["--login"]
+  env:
+    TERM: "xterm-256color"
+    COLORTERM: "truecolor"

@@ -1,0 +1,280 @@
+# ~/.zshrc - Zsh Configuration with Powerlevel10k
+
+# Enable Powerlevel10k instant prompt
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# Path to oh-my-zsh installation
+export ZSH="$HOME/.oh-my-zsh"
+
+# Set theme
+ZSH_THEME="powerlevel10k/powerlevel10k"
+
+# Oh My Zsh plugins
+plugins=(
+  git                    # Git aliases and functions
+  docker                 # Docker completion
+  docker-compose        # Docker Compose completion
+  kubectl               # Kubernetes completion
+  terraform            # Terraform completion
+  aws                  # AWS CLI completion
+  npm                  # npm completion
+  yarn                 # Yarn completion
+  python               # Python aliases
+  pip                  # pip completion
+  virtualenv           # virtualenv helpers
+  golang               # Go helpers
+  rust                 # Rust/Cargo completion
+  fzf                  # Fuzzy finder
+  z                    # Directory jumper
+  colored-man-pages    # Colorful man pages
+  command-not-found    # Suggest packages
+  extract              # Extract any archive
+  sudo                 # Double ESC = sudo !!
+  web-search           # Search from terminal
+  jsontools            # JSON utilities
+  zsh-autosuggestions  # Fish-like suggestions
+  zsh-syntax-highlighting  # Syntax highlighting
+  zsh-completions      # Additional completions
+)
+
+# Load Oh My Zsh
+source $ZSH/oh-my-zsh.sh
+
+# ============================================
+# Environment Variables
+# ============================================
+
+# Homebrew (Apple Silicon)
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Default editor
+export EDITOR='nvim'
+export VISUAL='nvim'
+
+# Language settings
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# Development paths
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
+# Python
+export PIPX_HOME=$HOME/.local/pipx
+export PIPX_BIN_DIR=$HOME/.local/bin
+export PATH=$PATH:$PIPX_BIN_DIR
+
+# Node.js (NVM)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Rust
+source "$HOME/.cargo/env"
+
+# Java (jenv)
+export PATH="$HOME/.jenv/bin:$PATH"
+eval "$(jenv init -)"
+
+# ============================================
+# Aliases
+# ============================================
+
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias ~='cd ~'
+alias -- -='cd -'
+
+# Enhanced ls with exa
+alias ls='exa --icons'
+alias l='exa -la --icons --git'
+alias ll='exa -l --icons --git'
+alias lt='exa --tree --icons --level=2'
+
+# Git shortcuts
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git pull'
+alias gd='git diff'
+alias gco='git checkout'
+alias gb='git branch'
+alias glog='git log --oneline --graph --decorate'
+
+# Docker shortcuts
+alias d='docker'
+alias dc='docker-compose'
+alias dps='docker ps'
+alias dex='docker exec -it'
+
+# Kubernetes shortcuts
+alias k='kubectl'
+alias kgp='kubectl get pods'
+alias kgs='kubectl get services'
+alias kgd='kubectl get deployments'
+alias kaf='kubectl apply -f'
+
+# Python
+alias py='python3'
+alias pip='pip3'
+alias venv='python3 -m venv'
+alias activate='source venv/bin/activate'
+
+# System
+alias reload='source ~/.zshrc'
+alias path='echo -e ${PATH//:/\\n}'
+alias myip='curl -s https://api.ipify.org && echo'
+
+# Tailscale
+alias ts='tailscale'
+alias tss='tailscale status'
+alias tsup='tailscale up'
+alias tsdown='tailscale down'
+
+# Enhanced commands
+alias cat='bat'
+alias find='fd'
+alias grep='rg'
+alias top='htop'
+alias du='ncdu'
+
+# Safety nets
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# ============================================
+# Functions
+# ============================================
+
+# Create and enter directory
+mkcd() {
+    mkdir -p "$@" && cd "$_"
+}
+
+# Extract any archive
+extract() {
+    if [ -f $1 ]; then
+        case $1 in
+            *.tar.bz2)   tar xjf $1     ;;
+            *.tar.gz)    tar xzf $1     ;;
+            *.bz2)       bunzip2 $1     ;;
+            *.rar)       unrar e $1     ;;
+            *.gz)        gunzip $1      ;;
+            *.tar)       tar xf $1      ;;
+            *.tbz2)      tar xjf $1     ;;
+            *.tgz)       tar xzf $1     ;;
+            *.zip)       unzip $1       ;;
+            *.Z)         uncompress $1  ;;
+            *.7z)        7z x $1        ;;
+            *)     echo "'$1' cannot be extracted" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# Git clone and cd
+gclone() {
+    git clone "$1" && cd "$(basename "$1" .git)"
+}
+
+# Find and edit with fzf
+fe() {
+    local file
+    file=$(fzf --query="$1" --select-1 --exit-0)
+    [ -n "$file" ] && ${EDITOR:-vim} "$file"
+}
+
+# Kill process with fzf
+fkill() {
+    local pid
+    pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+    if [ "x$pid" != "x" ]; then
+        echo $pid | xargs kill -${1:-9}
+    fi
+}
+
+# Docker exec into container with fzf
+dexec() {
+    local container
+    container=$(docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}" | fzf | awk '{print $1}')
+    if [ -n "$container" ]; then
+        docker exec -it $container ${1:-/bin/bash}
+    fi
+}
+
+# Switch Kubernetes context
+kcontext() {
+    kubectl config use-context $(kubectl config get-contexts -o name | fzf)
+}
+
+# ============================================
+# FZF Configuration
+# ============================================
+
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_DEFAULT_OPTS='
+  --height 40%
+  --layout=reverse
+  --border
+  --preview "bat --style=numbers --color=always --line-range :500 {}"
+  --preview-window=right:60%
+'
+
+# Ctrl+T - Paste selected files
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+# Alt+C - cd into selected directory
+export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+
+# ============================================
+# Completions
+# ============================================
+
+# Load completions
+autoload -Uz compinit && compinit
+
+# Case-insensitive completion
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+
+# Colored completion
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+# ============================================
+# Key Bindings
+# ============================================
+
+# Enable Vi mode
+bindkey -v
+
+# Reduce mode switch delay
+export KEYTIMEOUT=1
+
+# Common emacs bindings in vi mode
+bindkey '^A' beginning-of-line
+bindkey '^E' end-of-line
+bindkey '^R' history-incremental-search-backward
+bindkey '^P' up-history
+bindkey '^N' down-history
+bindkey '^W' backward-kill-word
+
+# ============================================
+# Powerlevel10k Configuration
+# ============================================
+
+# Load Powerlevel10k config
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# ============================================
+# Local Configuration
+# ============================================
+
+# Source local config if it exists (for machine-specific settings)
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

@@ -1,0 +1,129 @@
+# Starship Prompt Configuration
+# https://starship.rs/config/
+
+# Timeout for commands executed by starship (in milliseconds)
+command_timeout = 500
+
+# Custom format (order of modules)
+format = """
+[┌─](bold green)$username$hostname$directory$git_branch$git_status
+[└─](bold green)$character """
+
+# Right prompt
+right_format = """$cmd_duration$time"""
+
+[username]
+disabled = false
+style_user = "bold blue"
+style_root = "bold red"
+format = "[$user]($style) "
+show_always = true
+
+[hostname]
+disabled = false
+ssh_only = false
+format = "[@$hostname](bold yellow) "
+trim_at = "."
+
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+format = "in [$path]($style) "
+style = "cyan bold"
+read_only = " 🔒"
+
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[➜](bold red)"
+vicmd_symbol = "[➜](bold yellow)"
+
+[git_branch]
+symbol = " "
+format = "on [$symbol$branch]($style) "
+style = "bold purple"
+
+[git_status]
+format = '([\[$all_status$ahead_behind\]]($style) )'
+style = "bold red"
+conflicted = "🏳"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "🤷‍"
+stashed = "📦"
+modified = "📝"
+staged = '[++\($count\)](green)'
+renamed = "👅"
+deleted = "🗑"
+
+[cmd_duration]
+min_time = 2_000
+format = "took [$duration](bold yellow) "
+show_milliseconds = false
+
+[time]
+disabled = false
+format = '[\[$time\]]($style) '
+time_format = "%R"
+style = "bold yellow"
+
+# Language version displays
+[nodejs]
+format = "via [⬢ $version](bold green) "
+detect_extensions = ["js", "mjs", "cjs", "ts"]
+
+[python]
+format = 'via [${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+symbol = "🐍 "
+style = "yellow bold"
+
+[rust]
+format = "via [⚙️ $version](red bold) "
+
+[golang]
+format = "via [🐹 $version](bold cyan) "
+symbol = "🐹 "
+
+[java]
+format = "via [☕ $version](red dimmed) "
+symbol = "☕ "
+
+[swift]
+format = "via [🐦 $version](bold red) "
+symbol = "🐦 "
+
+[docker_context]
+format = "via [🐳 $context](blue bold) "
+
+[kubernetes]
+format = 'on [⛵ $context \($namespace\)](dimmed green) '
+disabled = false
+
+[aws]
+format = 'on [$symbol($profile )(\($region\) )]($style)'
+style = "bold orange"
+symbol = "☁️  "
+
+[gcloud]
+format = 'on [$symbol$account(@$domain)(\($region\))]($style) '
+symbol = "☁️  "
+style = "bold blue"
+
+[azure]
+disabled = false
+format = "on [$symbol($subscription)]($style) "
+symbol = "ﴃ "
+style = "blue bold"
+
+# Custom modules for additional information
+[custom.docker]
+command = "docker --version | cut -d' ' -f3 | cut -d',' -f1"
+when = "docker --version"
+symbol = "🐳 "
+style = "bold blue"
+format = "via [$symbol$output]($style) "
+
+[custom.vpn]
+command = "echo 🔒"
+when = "test -f /opt/cisco/anyconnect/bin/vpn && /opt/cisco/anyconnect/bin/vpn state | grep -q Connected"
+format = "[$output](bold green) "

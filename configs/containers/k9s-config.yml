@@ -1,0 +1,247 @@
+# K9s Configuration
+# Kubernetes TUI configuration
+
+k9s:
+  # General settings
+  refreshRate: 2
+  maxConnRetry: 5
+  enableMouse: true
+  headless: false
+  logoless: false
+  crumbsless: false
+  readOnly: false
+  noExitOnCtrlC: false
+  
+  # UI settings
+  ui:
+    enableMouse: true
+    headless: false
+    logoless: false
+    crumbsless: false
+    noIcons: false
+    skin: monokai
+    
+  # Cluster settings
+  clusters:
+    minikube:
+      namespace:
+        active: default
+        favorites:
+        - default
+        - kube-system
+        - kube-public
+      view:
+        active: pods
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+      portForwardAddress: localhost
+    
+    production:
+      namespace:
+        active: default
+        favorites:
+        - default
+        - production
+        - staging
+      view:
+        active: pods
+      readOnly: true
+      
+  # Current context
+  currentContext: minikube
+  currentCluster: minikube
+  
+  # Shell pod configuration
+  shellPod:
+    image: busybox:1.35.0
+    namespace: default
+    limits:
+      cpu: 100m
+      memory: 100Mi
+  
+  # Log settings
+  logger:
+    tail: 100
+    buffer: 5000
+    sinceSeconds: 300
+    fullScreenLogs: false
+    textWrap: false
+    showTime: false
+    
+  # Thresholds for resource monitoring
+  thresholds:
+    cpu:
+      critical: 90
+      warn: 70
+    memory:
+      critical: 90
+      warn: 70
+      
+  # Custom skins directory
+  skinDir: ~/.config/k9s/skins
+  
+  # Aliases
+  aliases:
+    # Shortcuts for common resources
+    dp: deployments
+    sec: secrets
+    jo: jobs
+    cr: clusterroles
+    crb: clusterrolebindings
+    ro: roles
+    rb: rolebindings
+    np: networkpolicies
+    pdb: poddisruptionbudgets
+    
+  # Hotkeys
+  hotKeys:
+    # Global hotkeys
+    quit:
+      key: q
+      description: Quit
+      command: quit
+      global: true
+      
+    help:
+      key: ?
+      description: Help
+      command: help
+      global: true
+      
+    # Navigation
+    menu:
+      key: ":"
+      description: Command mode
+      command: cmd
+      global: true
+      
+    # View hotkeys
+    pods:
+      key: Shift-P
+      description: View pods
+      command: "pods"
+      global: true
+      
+    deployments:
+      key: Shift-D
+      description: View deployments
+      command: "deployments"
+      global: true
+      
+    services:
+      key: Shift-S
+      description: View services
+      command: "services"
+      global: true
+      
+    # Actions
+    describe:
+      key: d
+      description: Describe
+      command: describe
+      
+    logs:
+      key: l
+      description: Logs
+      command: logs
+      
+    shell:
+      key: s
+      description: Shell
+      command: shell
+      
+    port-forward:
+      key: Shift-F
+      description: Port forward
+      command: port-forward
+      
+    edit:
+      key: e
+      description: Edit
+      command: edit
+      
+    delete:
+      key: Ctrl-D
+      description: Delete
+      command: delete
+      
+    kill:
+      key: Ctrl-K
+      description: Kill
+      command: kill
+      
+    # Filtering and sorting
+    filter:
+      key: /
+      description: Filter
+      command: filter
+      
+    inverse-filter:
+      key: Shift-/
+      description: Inverse filter
+      command: inverse-filter
+      
+    sort-name:
+      key: n
+      description: Sort by name
+      command: sort name
+      
+    sort-age:
+      key: a
+      description: Sort by age
+      command: sort age
+      
+    # Custom commands
+    top-nodes:
+      key: Shift-N
+      description: Top nodes
+      command: "top nodes"
+      global: true
+      
+    top-pods:
+      key: Shift-T
+      description: Top pods
+      command: "top pods"
+      global: true
+      
+  # Plugins
+  plugins:
+    # Example plugin for stern (multi-pod log tailing)
+    stern:
+      shortCut: Ctrl-L
+      description: Tail logs with stern
+      scopes:
+      - pods
+      - deployments
+      command: stern
+      background: false
+      args:
+      - --tail
+      - 50
+      - --since
+      - 1m
+      - $FILTER
+      
+    # Example plugin for kubectl tree
+    tree:
+      shortCut: Ctrl-T
+      description: Tree view
+      scopes:
+      - all
+      command: kubectl-tree
+      background: false
+      args:
+      - $RESOURCE_NAME
+      - -n
+      - $NAMESPACE
+      
+  # Port forward settings
+  portForwardAddress:
+    - localhost
+    - 127.0.0.1
